@@ -1,5 +1,3 @@
-
-
 #include <ESP8266WiFi.h>
 
 
@@ -23,6 +21,39 @@ String Country;
 float Temperature;
 float Humidity;
 float Pressure;
+
+void prettyPrintJson(){
+      int tabCount=0;
+      for(int i=0;result[i]!=0;i++){
+        if(result[i]=='{'){
+          Serial.print("\n");
+        }
+        else if(result[i]=='}'){
+          Serial.print("\n");
+          delay(1500);
+        }
+        else if(result[i]==':'){
+          if(result[i+1]=='[' || result[i+1]=='{' ){
+            Serial.print("\t-------------\n");
+            i++;
+          }
+          else{
+            Serial.print("=");
+          }
+        }
+        else if(result[i]==','){
+          Serial.print("\n");
+        }
+        else if(result[i]=='"'||result[i]==']'){
+          continue;
+        }
+        else{
+          Serial.print(result[i]); 
+        }
+      } 
+      Serial.println();
+      Serial.println("----------------------- x-x-x -----------------------");
+    }   
 
 void getWeatherData()                                //client function to send/receive GET request data.
 {
@@ -108,28 +139,21 @@ void loop() {
   Serial.println("%");
   Serial.println("Analog reading is is:");
   Serial.print(sensorVal);
-  Serial.println("%");
 
   if(counter == 60)                                 //Get new data every 10 minutes
     {
       counter = 0;
-      Serial.println(result);
+      prettyPrintJson();
       delay(1000);
       getWeatherData();
       
       
     }else
     {
-      String s="yes", t="yes";
+      delay(1000);
       counter++;
-      if(s==t){
-        Serial.println("Works");
-      }
-      else{
-        Serial.println("Does not Work");
-      }
-      Serial.println(result);
-      delay(5000);
+      prettyPrintJson();
+      delay(2000);
     }
   delay(1000);
   }
